@@ -20,6 +20,11 @@ import static java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  */
 public class StateMachine {
 
+    /**
+     * 使用读写锁，可用于多线程中，
+     * 注意 锁升级，会产生死锁，同一个线程在没有释放读锁的情况下去申请写锁是不成立的，
+     * 不然会产生死锁
+     */
     private final ReadWriteLock mLock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock.WriteLock mWriteLock = (WriteLock) mLock.writeLock();
     private final ReentrantReadWriteLock.ReadLock mReadLock = (ReadLock) mLock.readLock();
@@ -59,12 +64,19 @@ public class StateMachine {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 限定状态范围
+     */
     @IntDef(flag = true, value = {STATE_ONE, STATE_TWO, STATE_THREE, STATE_FOUR, STATE_FIVE, STATE_SIX,})
     @Retention(RetentionPolicy.SOURCE)
     public @interface STATE {
     }
 
 
+    /**
+     * 通过 | 增加状态
+     * @param flag
+     */
     public void addState(@STATE final int flag) {
         updateWriteState(new Callback<Void>() {
             @Override
@@ -75,6 +87,10 @@ public class StateMachine {
         });
     }
 
+    /**
+     * 通过 &(~flag) 移除状态
+     * @param flag
+     */
     public void removeState(@STATE final int flag) {
 
         updateWriteState(new Callback<Void>() {
@@ -86,6 +102,9 @@ public class StateMachine {
         });
     }
 
+    /**
+     * 清除所有状态包括 初始状态和 当前状态
+     */
     public void clearState() {
 
         updateWriteState(new Callback<Void>() {
@@ -97,7 +116,9 @@ public class StateMachine {
         });
     }
 
-
+    /**
+     * 重置当前状态为初始状态
+     */
     public void resetState() {
 
         updateWriteState(new Callback<Void>() {
@@ -110,6 +131,11 @@ public class StateMachine {
         });
     }
 
+    /**
+     * 比较两状态机 当前状态是否相同
+     * @param state
+     * @return
+     */
     public boolean compareState(final StateMachine state) {
 
         return updateReadState(new Callback<Boolean>() {
@@ -121,6 +147,11 @@ public class StateMachine {
     }
 
 
+    /**
+     * * 比较当前状态是否相同
+     * @param state
+     * @return
+     */
     private boolean compareState(@STATE final int state) {
 
         return updateReadState(new Callback<Boolean>() {
@@ -131,6 +162,11 @@ public class StateMachine {
         });
     }
 
+    /**
+     * 获取两状态机 当前不同的状态
+     * @param state
+     * @return
+     */
     public int getDiffState(final StateMachine  state) {
 
         return updateReadState(new Callback<Integer>() {
@@ -141,7 +177,11 @@ public class StateMachine {
         });
     }
 
-
+    /**
+     * 获取当前不同的状态
+     * @param state
+     * @return
+     */
     private int getDiffState(@STATE final int state) {
 
         return updateReadState(new Callback<Integer>() {
@@ -152,10 +192,19 @@ public class StateMachine {
         });
     }
 
+    /**
+     * 获取状态机当前状态
+     * @return
+     */
     public int getCurrentState() {
         return mState;
     }
 
+    /**
+     * 获取状态机某二进制位的状态
+     * @param state
+     * @return
+     */
     public int getState(@STATE final int state) {
 
         return updateReadState(new Callback<Integer>() {
@@ -166,6 +215,11 @@ public class StateMachine {
         });
     }
 
+    /**
+     * 返回当前状态的二进制字符串形式
+     * @param state
+     * @return
+     */
     public String getStateWithBinary(@STATE final int state) {
 
         return updateReadState(new Callback<String>() {
@@ -177,6 +231,11 @@ public class StateMachine {
     }
 
 
+    /**
+     * 查询某二进制位的状态
+     * @param state
+     * @return
+     */
     public boolean hasState(@STATE final int state) {
 
         return updateReadState(new Callback<Boolean>() {
@@ -189,6 +248,12 @@ public class StateMachine {
     }
 
 
+    /**
+     * 通过写锁，更新操作
+     * @param callback
+     * @param <T>
+     * @return
+     */
     private <T> T updateWriteState(Callback<T> callback) {
 
         mWriteLock.lock();
@@ -202,6 +267,12 @@ public class StateMachine {
         return null;
     }
 
+    /**
+     * * 通过读锁，查询操作
+     * @param callback
+     * @param <T>
+     * @return
+     */
     private <T> T updateReadState(Callback<T> callback) {
 
         mReadLock.lock();
@@ -215,11 +286,20 @@ public class StateMachine {
         return null;
     }
 
+    /**
+     * 对扩展开放
+     * @param <T>
+     */
     private static interface Callback<T> {
         T callback();
     }
 
 
+    /**
+     * 静态方法创建实例对象
+     * @param initState
+     * @return
+     */
     public static StateMachine createStateMachine(@STATE int initState) {
         return new StateMachine(initState);
     }
@@ -229,10 +309,17 @@ public class StateMachine {
     }
 
 
+    /**
+     * 有参构造
+     * @param initState
+     */
     private StateMachine(@STATE int initState) {
         mState = mInitState = initState;
     }
 
+    /**
+     * 构建私有化，提供默认构造，允许反射创建
+     */
     private StateMachine() {
     }
 
@@ -243,33 +330,39 @@ public class StateMachine {
     }
 
 
-
+    public  static <T> void println(T t){
+        System.out.println(t);
+    }
 
 
 
     public static void main(String[] args){
 
-        System.out.println(" ---------      testAddMethod start     --------- ");
+//        System.out.println(" ---------      testAddMethod start     --------- ");
 
-        testAddMethod();
+//        testAddMethod();
 
-        System.out.println(" ---------      testDeleteMethod start     --------- ");
+//        System.out.println(" ---------      testDeleteMethod start     --------- ");
         testDeleteMethod();
-
-        System.out.println(" ---------      testResetMethod start     --------- ");
-        testResetMethod();
-
-        System.out.println(" ---------      testDiffMethod start     --------- ");
-        testDiffMethod();
-
-        System.out.println(" ---------      testCompareState start     --------- ");
-        testCompareState();
+//
+//        System.out.println(" ---------      testResetMethod start     --------- ");
+//        testResetMethod();
+//
+//        System.out.println(" ---------      testDiffMethod start     --------- ");
+//        testDiffMethod();
+//
+//        System.out.println(" ---------      testCompareState start     --------- ");
+//        testCompareState();
     }
 
 
+    /**
+     * 测试增加状态方法
+     */
     public static void testAddMethod(){
 
         StateMachine stateMachine = StateMachine.createStateMachine();
+        //调用 toString方法获取状态
         System.out.println(stateMachine.toString());
         stateMachine.addState(STATE_ONE);
         stateMachine.addState(STATE_TWO);
@@ -278,29 +371,28 @@ public class StateMachine {
         stateMachine.addState(STATE_FIVE);
         stateMachine.addState(STATE_SIX);
 
-
         //query state
-        System.out.println("stateMachine.hasState(STATE_ONE)  "+stateMachine.hasState(STATE_ONE));
-        System.out.println("stateMachine.hasState(STATE_TWO)  "+stateMachine.hasState(STATE_TWO));
-        System.out.println("stateMachine.hasState(STATE_THREE)  "+stateMachine.hasState(STATE_THREE));
-        System.out.println("stateMachine.hasState(STATE_FOUR)  "+stateMachine.hasState(STATE_FOUR));
-        System.out.println("stateMachine.hasState(STATE_FIVE)  "+stateMachine.hasState(STATE_FIVE));
-        System.out.println("stateMachine.hasState(STATE_SIX)  "+stateMachine.hasState(STATE_SIX));
-
-        System.out.println(stateMachine.toString());
-
+        println("stateMachine.hasState(STATE_ONE)  "+stateMachine.hasState(STATE_ONE));
+        println("stateMachine.hasState(STATE_TWO)  "+stateMachine.hasState(STATE_TWO));
+        println("stateMachine.hasState(STATE_THREE)  "+stateMachine.hasState(STATE_THREE));
+        println("stateMachine.hasState(STATE_FOUR)  "+stateMachine.hasState(STATE_FOUR));
+        println("stateMachine.hasState(STATE_FIVE)  "+stateMachine.hasState(STATE_FIVE));
+        println("stateMachine.hasState(STATE_SIX)  "+stateMachine.hasState(STATE_SIX));
+        //调用 toString方法获取状态
+        println(stateMachine.toString());
 
     }
 
 
-
+    /**
+     * 测试移除状态
+     */
     public static void testDeleteMethod(){
-
 
         StateMachine stateMachine = StateMachine.createStateMachine(STATE_ONE|STATE_TWO|STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
 
         //print InitState  and current state
-        System.out.println(stateMachine.toString());
+        println(stateMachine.toString());
 
         stateMachine.removeState(STATE_ONE);
         stateMachine.removeState(STATE_TWO);
@@ -310,9 +402,7 @@ public class StateMachine {
         stateMachine.removeState(STATE_SIX);
 
         //print InitState  and current state
-        System.out.println(stateMachine.toString());
-
-
+        println(stateMachine.toString());
 
     }
 
@@ -334,11 +424,11 @@ public class StateMachine {
         stateMachine.removeState(STATE_SIX);
 
         //print InitState  and current state
-        System.out.println(stateMachine.toString());
+        println(stateMachine.toString());
 
         //重置状态
         stateMachine.resetState();
-        System.out.println(stateMachine.toString());
+        println(stateMachine.toString());
 
 
 
@@ -349,20 +439,20 @@ public class StateMachine {
 
 
         StateMachine stateMachine1 = StateMachine.createStateMachine(STATE_ONE|STATE_TWO|STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
-        System.out.println("stateMachine1 "+stateMachine1.toString());
+        println("stateMachine1 "+stateMachine1.toString());
         StateMachine stateMachine2 = StateMachine.createStateMachine();
-        System.out.println("stateMachine2 "+stateMachine2.toString());
-        System.out.println("getDiffState  ： "+Integer.toBinaryString(stateMachine1.getDiffState(stateMachine2)));
+        println("stateMachine2 "+stateMachine2.toString());
+        println("getDiffState  ： "+Integer.toBinaryString(stateMachine1.getDiffState(stateMachine2)));
 
     }
 
     public static void testCompareState(){
         StateMachine stateMachine1 = StateMachine.createStateMachine(STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
-        System.out.println("stateMachine1 "+stateMachine1.toString());
+        println("stateMachine1 "+stateMachine1.toString());
         StateMachine stateMachine2 = StateMachine.createStateMachine();
-        System.out.println("stateMachine2 "+stateMachine2.toString());
+        println("stateMachine2 "+stateMachine2.toString());
 
-        System.out.println("compareState  ： "+stateMachine1.compareState(stateMachine2));
+        println("compareState  ： "+stateMachine1.compareState(stateMachine2));
 
 
     }
