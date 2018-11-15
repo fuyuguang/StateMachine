@@ -338,21 +338,21 @@ public class StateMachine {
 
     public static void main(String[] args){
 
-//        System.out.println(" ---------      testAddMethod start     --------- ");
+        System.out.println(" ---------      testAddMethod start     --------- ");
 
-//        testAddMethod();
+        testAddMethod();
 
-//        System.out.println(" ---------      testDeleteMethod start     --------- ");
+        System.out.println(" ---------      testDeleteMethod start     --------- ");
         testDeleteMethod();
-//
-//        System.out.println(" ---------      testResetMethod start     --------- ");
-//        testResetMethod();
-//
-//        System.out.println(" ---------      testDiffMethod start     --------- ");
-//        testDiffMethod();
-//
-//        System.out.println(" ---------      testCompareState start     --------- ");
-//        testCompareState();
+
+        System.out.println(" ---------      testResetMethod start     --------- ");
+        testResetMethod();
+
+        System.out.println(" ---------      testDiffMethod start     --------- ");
+        testDiffMethod();
+
+        System.out.println(" ---------      testCompareState start     --------- ");
+        testCompareState();
     }
 
 
@@ -407,9 +407,10 @@ public class StateMachine {
     }
 
 
-
+    /**
+     * 重置状态方法，会重置为初始值
+     */
     public static void testResetMethod(){
-
 
         StateMachine stateMachine = StateMachine.createStateMachine(STATE_ONE|STATE_TWO|STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
 
@@ -430,22 +431,25 @@ public class StateMachine {
         stateMachine.resetState();
         println(stateMachine.toString());
 
-
-
     }
 
 
+    /**
+     * 状态机比较方法，列出，不同的位
+     */
     public static void testDiffMethod(){
 
-
-        StateMachine stateMachine1 = StateMachine.createStateMachine(STATE_ONE|STATE_TWO|STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
+        StateMachine stateMachine1 = StateMachine.createStateMachine(STATE_ONE|STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
         println("stateMachine1 "+stateMachine1.toString());
-        StateMachine stateMachine2 = StateMachine.createStateMachine();
+        StateMachine stateMachine2 = StateMachine.createStateMachine(STATE_ONE);
         println("stateMachine2 "+stateMachine2.toString());
         println("getDiffState  ： "+Integer.toBinaryString(stateMachine1.getDiffState(stateMachine2)));
 
     }
 
+    /**
+     * 比较方法
+     */
     public static void testCompareState(){
         StateMachine stateMachine1 = StateMachine.createStateMachine(STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
         println("stateMachine1 "+stateMachine1.toString());
@@ -453,7 +457,6 @@ public class StateMachine {
         println("stateMachine2 "+stateMachine2.toString());
 
         println("compareState  ： "+stateMachine1.compareState(stateMachine2));
-
 
     }
 

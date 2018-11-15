@@ -3,8 +3,6 @@
 
 
 
-
-
 ```java
 
 /**
@@ -336,6 +334,8 @@ public class StateMachine {
 
 
 
+###1.增加状态方法
+
 ```java
 
 	/**
@@ -383,6 +383,8 @@ InitState 0   current State : 111111
 
 
 
+### 2.移除状态方法
+
 ```java
 /**
  * 测试移除状态
@@ -404,5 +406,132 @@ public static void testDeleteMethod(){
     //print InitState  and current state
     println(stateMachine.toString());
     
+}
+```
+
+执行结果
+
+```
+InitState 111111   current State : 111111
+InitState 111111   current State : 0
+```
+
+
+
+### 3.重置状态方法
+
+```java
+/**
+ * 重置状态方法，会重置为初始值
+ */
+public static void testResetMethod(){
+
+    StateMachine stateMachine = StateMachine.createStateMachine(STATE_ONE|STATE_TWO|STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
+
+    //print InitState  and current state
+    System.out.println(stateMachine.toString());
+
+    stateMachine.removeState(STATE_ONE);
+    stateMachine.removeState(STATE_TWO);
+    stateMachine.removeState(STATE_THREE);
+    stateMachine.removeState(STATE_FOUR);
+    stateMachine.removeState(STATE_FIVE);
+    stateMachine.removeState(STATE_SIX);
+
+    //print InitState  and current state
+    println(stateMachine.toString());
+
+    //重置状态
+    stateMachine.resetState();
+    println(stateMachine.toString());
+
+}
+```
+
+执行结果
+
+```
+InitState 111111   current State : 111111
+InitState 111111   current State : 0
+InitState 111111   current State : 111111
+```
+
+
+
+### 4.以二进制形式获取状态机不同位
+
+```java
+/**
+ * 状态机比较方法，列出，不同的位
+ */
+public static void testDiffMethod(){
+    
+    StateMachine stateMachine1 = StateMachine.createStateMachine(STATE_ONE|STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
+    println("stateMachine1 "+stateMachine1.toString());
+    StateMachine stateMachine2 = StateMachine.createStateMachine(STATE_ONE);
+    println("stateMachine2 "+stateMachine2.toString());
+    println("getDiffState  ： "+Integer.toBinaryString(stateMachine1.getDiffState(stateMachine2)));
+
+}
+```
+
+执行结果
+
+```java
+stateMachine1 InitState 111111   current State : 111111
+stateMachine2 InitState 1   current State : 1
+getDiffState  ： 111110
+```
+
+
+
+### 5.比较方法
+
+```java
+/**
+ * 比较方法
+ */
+public static void testCompareState(){
+    StateMachine stateMachine1 = StateMachine.createStateMachine(STATE_TWO|STATE_THREE|STATE_FOUR|STATE_FIVE|STATE_SIX);
+    println("stateMachine1 "+stateMachine1.toString());
+    StateMachine stateMachine2 = StateMachine.createStateMachine();
+    println("stateMachine2 "+stateMachine2.toString());
+
+    println("compareState  ： "+stateMachine1.compareState(stateMachine2));
+}
+```
+
+执行结果
+
+```
+stateMachine1 InitState 111110   current State : 111110
+stateMachine2 InitState 0   current State : 0
+compareState  ： false
+```
+
+
+
+####android studio 在当前类中右键 运行【Run StateMachine.main()】 及可进行验证
+
+
+
+```java
+public static void main(String[] args){
+
+    System.out.println(" ---------      testAddMethod start     --------- ");
+
+    testAddMethod();
+
+    System.out.println(" ---------      testDeleteMethod start     --------- ");
+    testDeleteMethod();
+
+    System.out.println(" ---------      testResetMethod start     --------- ");
+    testResetMethod();
+
+    System.out.println(" ---------      testDiffMethod start     --------- ");
+    testDiffMethod();
+
+    System.out.println(" ---------      testCompareState start     --------- ");
+    testCompareState();
 }
 ```
